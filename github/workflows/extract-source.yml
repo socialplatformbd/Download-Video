@@ -14,26 +14,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract source ZIP
+      - name: Verify ZIP
         run: |
           set -e
-
           test -f Video-Saver-Fixed-Source.zip
+          unzip -t Video-Saver-Fixed-Source.zip
+
+      - name: Extract source
+        run: |
+          set -e
 
           mkdir -p /tmp/video-saver-source
 
           unzip -q Video-Saver-Fixed-Source.zip \
             -d /tmp/video-saver-source
 
-          test -d /tmp/video-saver-source/download-video-main
+          test -f /tmp/video-saver-source/download-video-main/settings.gradle.kts
+          test -f /tmp/video-saver-source/download-video-main/server.js
 
           rsync -a \
             /tmp/video-saver-source/download-video-main/ ./
 
           rm Video-Saver-Fixed-Source.zip
 
-      - name: Commit extracted source
+      - name: Commit extracted project
         run: |
+          set -e
+
           git config user.name "github-actions[bot]"
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
